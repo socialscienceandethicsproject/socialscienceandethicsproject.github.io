@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sports Survey Responses</title>
-    <link rel="stylesheet" href="styles.css"> <!https://github.com/socialscienceandethicsproject/socialscienceandethicsproject.github.io/blob/main/styles.css>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -23,12 +23,38 @@
     </footer>
 
     <script>
-        const labels = ['Football', 'Basketball', 'Tennis', 'Cricket', 'Others'];
+        // Your Google Sheets API details
+        const SHEET_ID = '16p_J8ODeKnrolDBpIb1i74gHRo4B1sYJQDZmTUTvxAo';  // Replace with your Google Sheet ID
+        const API_KEY = 'AIzaSyDRWYCu5rpOYfhInxG6_0wXLCuPnuZADig';    // Replace with your Google API key
+
+        // Google Sheets API URL to fetch data
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+
+        // Fetch data from Google Sheets API
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const rows = data.values;
+                console.log(rows);  // Check the data in the browser's console
+
+                // Process the data to be used in Chart.js
+                // Example assumes 1st column is labels, 2nd column is values
+                const labels = rows.slice(1).map(row => row[0]);  // Skips the header row
+                const chartData = rows.slice(1).map(row => parseInt(row[1])); // Assumes numeric data in column 2
+
+                // Update chart with fetched data
+                responseChart.data.labels = labels;
+                responseChart.data.datasets[0].data = chartData;
+                responseChart.update();
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        // Chart.js chart configuration
         const data = {
-            labels: labels,
+            labels: [],
             datasets: [{
                 label: 'Favorite Sports',
-                data: [12, 19, 3, 5, 2],
+                data: [],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -48,7 +74,7 @@
         };
 
         const config = {
-            type: 'bar', 
+            type: 'bar',  // You can also change to 'pie'
             data: data,
             options: {
                 scales: {
@@ -64,6 +90,6 @@
             config
         );
     </script>
+
 </body>
 </html>
-
